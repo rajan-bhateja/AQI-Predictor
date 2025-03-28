@@ -1,26 +1,33 @@
 import streamlit as st
+
+import calculate_aqi
 import calculate_aqi as calculate
 
 # App Title
 st.title('AQI Predictor')
 st.subheader('Know the AQI by entering pollutant information')
-st.divider()
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 # Form to take inputs
 with col1:
     with st.form(key='inputs'):
-        st.subheader('Enter Pollutants Values:')
-        pm25 = st.number_input('PM2.5:', min_value=0, max_value=2000, step=1)
-        pm10 = st.number_input('PM10:', min_value=0, max_value=2000, step=1)
-        no2 = st.number_input('NO2:', min_value=0, max_value=2000, step=1)
-        nh3 = st.number_input('NH3:', min_value=0, max_value=2000, step=1)
-        so2 = st.number_input('SO2:', min_value=0, max_value=2000, step=1)
-        co = st.number_input('CO:', min_value=0, max_value=2000, step=1)
-        o3 = st.number_input('O3:', min_value=0, max_value=2000, step=1)
+        pm25 = st.number_input('Particulate Matter (PM2.5):', min_value=0, max_value=2000, step=1)
+        pm10 = st.number_input('Particulate Matter (PM10):', min_value=0, max_value=2000, step=1)
+        no2 = st.number_input('Nitrogen Dioxide (NO2):', min_value=0, max_value=2000, step=1)
+        nh3 = st.number_input('Ammonia (NH3):', min_value=0, max_value=2000, step=1)
+        so2 = st.number_input('Sulphur Dioxide (SO2):', min_value=0, max_value=2000, step=1)
+        co = st.number_input('Carbon Monoxide (CO):', min_value=0, max_value=2000, step=1)
+        o3 = st.number_input('Ozone (O3):', min_value=0, max_value=2000, step=1)
 
         submitted = st.form_submit_button('Submit')
+
+with col2:
+    st.write('### AQI Breakdown')
+
+with col3:
+    st.write('### Recommendations:')
+
 
 # Run AQI calculation when the form is submitted
 if submitted:
@@ -29,26 +36,28 @@ if submitted:
 
     with col2:
         # Display AQI for each pollutant
-        st.write("### AQI Breakdown:")
         for pollutant, value in aqi_values.items():
             st.write(f"- {pollutant}: **{round(value, 2)}**")
 
-        # Display final AQI
+        st.write("## **AQI:**", int(final_aqi))
+        st.subheader(f"Category: {category}")
+
+    with col3:
+        # Display recommendations
         if final_aqi <= 50:
-            st.write('Good')
+            st.write('#### 😊 Enjoy outdoor activities without any restrictions')
+
         elif final_aqi <= 100:
-            st.write('Satisfactory')
+            st.write('#### 🙂 Safe for most people; sensitive groups should limit prolonged exposure')
+
         elif final_aqi <= 200:
-            st.write('Moderate')
+            st.write("#### 😐 Consider reducing outdoor exertion, especially if you have respiratory issues")
+
         elif final_aqi <= 300:
-            st.write('Poor')
+            st.write("#### 😷 Avoid outdoor activities; wear a mask if necessary")
+
         elif final_aqi <= 400:
-            st.write('Very Poor')
+            st.write("#### 🤢 Stay indoors as much as possible; use air purifiers if available")
+
         else:
-            st.write('Severe')
-
-        st.write("## **Final AQI:**", round(final_aqi, 2))
-
-        if category=='Good':
-            st.subheader('Good')
-        st.subheader(f"AQI Category: {category}")
+            st.write("#### ☠️ Serious health risks; avoid going outside and ensure proper ventilation indoors")
